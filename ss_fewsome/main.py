@@ -94,7 +94,7 @@ def parse_arguments():
     parser.add_argument('--train_ids_path', type=str, default='../meta/')
     parser.add_argument('--task', type=str, default='test')
     parser.add_argument('--eval_epoch', type=int, default=1)
-    parser.add_argument('--data_path', type=str, default='/home/niamh/knee/archive-4/')
+    parser.add_argument('--data_path', type=str, default='/home/knee/archive-4/')
     parser.add_argument('--model_name', type=str, default='mod_1')
     parser.add_argument('--augmentations', type=str, default="crop, cutpaste")
     parser.add_argument('--normal_augs', type=str, default="sharp, bright, jitter")
