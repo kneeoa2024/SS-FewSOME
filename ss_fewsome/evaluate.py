@@ -26,9 +26,9 @@ def evaluate_severity( patches, padding,patchsize, stride, seed,ref_dataset, val
         try:
             mat_dists = torch.cat ((mat_dists, 1 - F.cosine_similarity(mat[i,0,:], mat[:,0,:], dim=-1).unsqueeze(0)))
         except:
-            mat_dists = 1 - F.cosine_similarity(mat[i,0,:], mat[:,0,:], dim=-1).unsqueeze(0) #30 x 1000
+            mat_dists = 1 - F.cosine_similarity(mat[i,0,:], mat[:,0,:], dim=-1).unsqueeze(0) #30 x 1000 with #30 x1000
 
-    mat_dists  = mat_dists.flatten()[1:].view(mat_dists.shape[0]-1, mat_dists.shape[0]+1)[:,:-1].reshape(mat_dists.shape[0], mat_dists.shape[0]-1)
+    mat_dists  = mat_dists.flatten()[1:].view(mat_dists.shape[0]-1, mat_dists.shape[0]+1)[:,:-1].reshape(mat_dists.shape[0], mat_dists.shape[0]-1) #mat_dists.to(dev) * (torch.FloatTensor([1]).to(dev) - torch.eye(mat_dists.shape[0]).to(dev))
     c= create_centre(mat) #1 x 256
     if shots > 0:
         c_anom = create_centre(mat_anom)
@@ -81,16 +81,18 @@ def evaluate_severity( patches, padding,patchsize, stride, seed,ref_dataset, val
 
 
     if shots > 0:
-        df, results,df_rmv, results_rmv = get_results(get_nominal_scores.scores, get_anom_scores.scores, ref_dataset.paths2, names, labels_sev)
+        df, results = get_results(get_nominal_scores.scores, get_anom_scores.scores, ref_dataset.paths2, names, labels_sev)
     else:
-        df, results,df_rmv, results_rmv = get_results(get_nominal_scores.scores, {}, ref_dataset.paths2, names, labels_sev)
+        df, results = get_results(get_nominal_scores.scores, {}, ref_dataset.paths2, names, labels_sev)
 
-    if get_oarsi_results:
-        oarsi_results = oarsi(df, shots, meta_data_dir)
-        oarsi_results_rmv = oarsi(df_rmv, shots, meta_data_dir)
 
 
     if get_oarsi_results:
-        return df, results, pd.DataFrame(ref_info).T, ref_std, oarsi_results, df_rmv, results_rmv, oarsi_results_rmv
+        if shots > 0:
+            oarsi_results = oarsi(df, shots, meta_data_dir, ['centre_mean', 'norm_min', 'w_centre'])
+        else:
+            oarsi_results = oarsi(df, shots, meta_data_dir, ['centre_mean', 'norm_min'])
+
+        return df, results, pd.DataFrame(ref_info).T, ref_std, oarsi_results
     else:
-        return df, results, pd.DataFrame(ref_info).T, ref_std, df_rmv, results_rmv
+        return df, results, pd.DataFrame(ref_info).T, ref_std
