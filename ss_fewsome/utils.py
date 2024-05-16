@@ -191,7 +191,7 @@ def get_pseudo_labels(train_ids_path, path_to_anom_scores, data_path, margin, ma
 
 
 
-def write_results(df, results, res_name, logs_df, epoch, model, optimizer, ref_std, oarsi_res, df_rmv, results_rmv, oarsi_results_rmv, args):
+def write_results(df, results, res_name, logs_df, epoch, model, optimizer, ref_std, df_rmv, results_rmv, args, oarsi_res=None, oarsi_results_rmv=None):
 
 
       try:
@@ -202,11 +202,11 @@ def write_results(df, results, res_name, logs_df, epoch, model, optimizer, ref_s
       results.to_csv('./outputs/results/' + res_name  + '_epoch_' +str(epoch) )
       results_rmv.to_csv('./outputs/results/' + res_name  + 'train_removed_epoch_' +str(epoch) )
 
-      oarsi_res.to_csv('./outputs/oarsi/' + res_name  + '_epoch_' +str(epoch) )
-      oarsi_results_rmv.to_csv('./outputs/oarsi/' + res_name  + 'train_removed_epoch_' +str(epoch) )
+      if oarsi_res is not None:
+          oarsi_res.to_csv('./outputs/oarsi/' + res_name  + '_epoch_' +str(epoch) )
+          oarsi_results_rmv.to_csv('./outputs/oarsi/' + res_name  + 'train_removed_epoch_' +str(epoch) )
 
       if args.save_models == 1:
-        #  if (epoch>=22) & (epoch <29):
         torch.save({
           'model_state_dict': model.state_dict(),
           'optimizer_state_dict': optimizer.state_dict()
