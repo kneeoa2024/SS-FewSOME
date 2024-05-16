@@ -153,7 +153,11 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
       if eval_epoch == 1:
 
           if (epoch % 10 == 0):
-              df, results, ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model, args.data_path, criterion, args.device, shots,  args.meta_data_dir)
+              if args.get_oarsi_results:
+                  df, results, ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model, args.data_path, criterion, args.device, shots,  args.meta_data_dir, args.get_oarsi_results)
+              else:
+                  df, results, ref_info,ref_std, df_rmv, results_rmv = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model, args.data_path, criterion, args.device, shots,  args.meta_data_dir, args.get_oarsi_results)
+
               oas.append(results.loc[metric, 'auc'])
               mid.append(results.loc[metric,'auc_mid'])
               mid_2.append(results.loc[metric,'auc_mid2'])
@@ -183,11 +187,17 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
                   logs_df=pd.concat([logs_df, pd.DataFrame(ref_c, columns=['ref_centre']) ], axis =1)
 
 
-
-              write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std ,oarsi_res,  df_rmv, results_rmv, oarsi_results_rmv, args)
+              if args.get_oarsi_results:
+                  write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv,  args, oarsi_res,  oarsi_results_rmv)
+              else:
+                  write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv, args)
 
               if test_dataset is not None:
-                       df, results, ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir)
+                       if args.get_oarsi_results:
+                           df, results, ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir,args.get_oarsi_results)
+                       else:
+                            df, results, ref_info,ref_std, df_rmv, results_rmv = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+
                        oas_test.append(results.loc[metric, 'auc'])
                        mid_test.append(results.loc[metric,'auc_mid'])
                        mid_2_test.append(results.loc[metric,'auc_mid2'])
@@ -205,7 +215,10 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
                            logs_df=pd.concat([logs_df, pd.DataFrame(ref_c, columns=['ref_centre']) ], axis =1)
 
 
-                       write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std ,oarsi_res,  df_rmv, results_rmv, oarsi_results_rmv, args)
+                       if args.get_oarsi_results:
+                           write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv, args, oarsi_res, oarsi_results_rmv)
+                       else:
+                           write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv, args)
 
 
       if (epoch % 10 == 0) & (eval_epoch ==0):
@@ -243,13 +256,20 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
 
 
       if (epoch == epochs-1) & (eval_epoch == 0):
-            df, results,ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model,  args.data_path, criterion, args.device, shots, args.meta_data_dir)
-            write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std ,oarsi_res,  df_rmv, results_rmv, oarsi_results_rmv, args)
+            if args.get_oarsi_results:
+                df, results,ref_info,ref_std, oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model,  args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+                write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv, args,oarsi_res, oarsi_results_rmv)
+            else:
+                df, results,ref_info,ref_std, df_rmv, results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, val_dataset, model,  args.data_path, criterion, args.device, shots, args.meta_data_dir,args.get_oarsi_results)
+                write_results(df, results, model_name, logs_df, current_epoch+epoch, model, optimizer, ref_std , df_rmv, results_rmv, args)
+
             if test_dataset is not None:
-                df, results,ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir)
-                write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std ,oarsi_res,  df_rmv, results_rmv, oarsi_results_rmv, args)
-
-
+                if args.get_oarsi_results:
+                    df, results,ref_info,ref_std,oarsi_res, df_rmv, results_rmv, oarsi_results_rmv  = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+                    write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std, df_rmv, results_rmv,  args, oarsi_res, oarsi_results_rmv)
+                else:
+                    df, results,ref_info,ref_std, df_rmv, results_rmv = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+                    write_results(df, results, model_name + '_on_test_set', logs_df, current_epoch+epoch, model, optimizer, ref_std ,odf_rmv, results_rmv, args)
 
 
 
