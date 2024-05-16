@@ -135,6 +135,7 @@ def parse_arguments():
     parser.add_argument('--save_models', type=int, default=0)
     parser.add_argument('--save_anomaly_scores', type=int, default=1)
     parser.add_argument('--meta_data_dir', type=str, default = '../meta/kxr_sq_bu00.txt' )
+    parser.add_argument('--get_oarsi_results', type=int, default = 0)
 
     parser.add_argument('--margin', type=float, default = 1.184)
     parser.add_argument('--severe_margin', type=float, default = 3.122)
