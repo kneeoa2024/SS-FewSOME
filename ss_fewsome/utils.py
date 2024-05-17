@@ -275,22 +275,24 @@ def create_patches(features, padding,patchsize, stride):
 
 
 
-def ensemble_results(df, stage, metric, meta_data_dir):
+def ensemble_results(df, stage, metric, meta_data_dir, get_oarsi_results):
 
     res, auc, auc_mid, auc_mid2, auc_sev = get_metrics(df, metric)
 
     print('Spearman rank correlation coeffinet of stage {}'.format(res))
     print('OA AUC is {}'.format(auc_mid))
     print('Severe AUC is {}'.format(auc_sev))
-    if stage == 'ss':
-        oarsi_res = oarsi(df, 0, meta_data_dir, ['centre_mean'])
-        print('OARSI AUC is {}'.format(oarsi_res['auc'][0]))
-    else:
-        oarsi_res = oarsi(df, 30, meta_data_dir, ['w_centre'])
-        print('OARSI AUC is {}'.format(oarsi_res['auc'][0]))
+
+    if get_oarsi_results:
+        if stage == 'ss':
+            oarsi_res = oarsi(df, 0, meta_data_dir, ['centre_mean'])
+            print('OARSI AUC is {}'.format(oarsi_res['auc'][0]))
+        else:
+            oarsi_res = oarsi(df, 30, meta_data_dir, ['w_centre'])
+            print('OARSI AUC is {}'.format(oarsi_res['auc'][0]))
 
 
-def print_ensemble_results(path_to_anom_scores, epoch, stage, metric, meta_data_dir):
+def print_ensemble_results(path_to_anom_scores, epoch, stage, metric, meta_data_dir, get_oarsi_results):
     print('---------------------------------------------------- For stage ' + stage + '----------------------------------------------------')
     print('-----------------------------RESULTS ON UNLABELLED DATA---------------------------')
     print('Warning: unlabelled data includes the pseudo labels i.e. for stages that are not SSL and severe predictors, the model was trained on some of the unlabelled data')
@@ -305,7 +307,7 @@ def print_ensemble_results(path_to_anom_scores, epoch, stage, metric, meta_data_
         files = [file for file in files_total if (('epoch_' + str(epoch) ) in file) & ('on_test_set' not in file )]
 
     df = create_scores_dataframe(path_to_anom_scores, files, metric)
-    ensemble_results(df, stage, metric, meta_data_dir)
+    ensemble_results(df, stage, metric, meta_data_dir, get_oarsi_results)
 
     print('-----------------------------RESULTS ON TEST SET---------------------------')
     if isinstance(epoch, dict):
@@ -316,7 +318,7 @@ def print_ensemble_results(path_to_anom_scores, epoch, stage, metric, meta_data_
         files = [file for file in files_total if (('epoch_' + str(epoch) ) in file) & ('on_test_set' in file ) ]
 
     df = create_scores_dataframe(path_to_anom_scores, files, metric)
-    ensemble_results(df, stage, metric, meta_data_dir)
+    ensemble_results(df, stage, metric, meta_data_dir, get_oarsi_results)
 
 
 def create_scores_dataframe(path_to_anom_scores, files, metric):
