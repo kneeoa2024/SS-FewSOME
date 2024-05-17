@@ -233,7 +233,7 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
           ref_mean.append('na')
           ref_var.append('na')
           channel_std.append('na')
-          assert len(ref_var) == len(sevs)
+          assert len(ref_var) == len(sevs) 
 
 
           logs_df = pd.concat([pd.DataFrame(oas, columns=['OA>0']),  pd.DataFrame(mid, columns=['OA>1']),pd.DataFrame(mid_2, columns=['OA>2']), pd.DataFrame(sevs, columns=['OA>3']), pd.DataFrame(sps, columns=['spearman']),
