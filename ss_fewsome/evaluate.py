@@ -6,7 +6,7 @@ import warnings
 
 
 warnings.filterwarnings("ignore")
-
+ 
 
 def evaluate_severity( patches, padding,patchsize, stride, seed,ref_dataset, val_dataset, model,  data_path, criterion,  dev, shots, meta_data_dir, get_oarsi_results):
 
