@@ -213,7 +213,7 @@ if __name__ == '__main__':
       stage1_path_to_logs = args.stage1_path_to_logs
 
 
-  print_ensemble_results(stage1_path_to_anom_scores, TRAIN_PLATEAU_EPOCH, stages[0], 'centre_mean', args.meta_data_dir)
+  print_ensemble_results(stage1_path_to_anom_scores, TRAIN_PLATEAU_EPOCH, stages[0], 'centre_mean', args.meta_data_dir, args.get_oarsi_results)
 
   #stage2 is to DCLR-FewSOME_OA ITER 1
   if args.stage2:
@@ -234,7 +234,7 @@ if __name__ == '__main__':
 
 
   stage2_epoch = current_epoch
-  print_ensemble_results(stage2_path_to_anom_scores, current_epoch, stages[2], 'w_centre', args.meta_data_dir)
+  print_ensemble_results(stage2_path_to_anom_scores, current_epoch, stages[2], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
 
   #stage3 is to DCLR-FewSOME_OA ITER 2
   if args.stage3:
@@ -251,7 +251,7 @@ if __name__ == '__main__':
       current_epoch = get_best_epoch(args.stage3_path_to_logs, last_epoch = current_epoch, metric='ref_centre')
 
   stage3_epoch = current_epoch
-  print_ensemble_results(stage3_path_to_anom_scores, current_epoch, stages[3], 'w_centre', args.meta_data_dir)
+  print_ensemble_results(stage3_path_to_anom_scores, current_epoch, stages[3], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
 
   if args.stage_severe_pred:
       pseudo_label_ids, severe_margin = get_pseudo_labels(args.train_ids_path, stage1_path_to_anom_scores, args.data_path, margin = args.start_margin, metric = 'centre_mean', current_epoch=TRAIN_PLATEAU_EPOCH, num_pseudo_labels=args.severe_num_pseudo_labels, model_name=stages[1] + '/' + model_name_temp)
@@ -268,12 +268,12 @@ if __name__ == '__main__':
       current_epoch = get_best_epoch(args.stage_severe_path_to_logs, last_epoch = current_epoch, metric='ref_centre')
 
   stage_severe_epoch = SEVERE_PRED_EPOCH
-  print_ensemble_results(stage_severe_path_to_anom_scores, SEVERE_PRED_EPOCH, stages[1], 'w_centre', args.meta_data_dir)
+  print_ensemble_results(stage_severe_path_to_anom_scores, SEVERE_PRED_EPOCH, stages[1], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
 
 
   #rerun results for all stages
-  print_ensemble_results(stage1_path_to_anom_scores, TRAIN_PLATEAU_EPOCH, stages[0], 'centre_mean', args.meta_data_dir)
-  print_ensemble_results(stage2_path_to_anom_scores, stage2_epoch, stages[2], 'w_centre', args.meta_data_dir)
-  print_ensemble_results(stage3_path_to_anom_scores, stage3_epoch, stages[3], 'w_centre', args.meta_data_dir)
-  print_ensemble_results(stage_severe_path_to_anom_scores, SEVERE_PRED_EPOCH, stages[1], 'w_centre', args.meta_data_dir)
+  print_ensemble_results(stage1_path_to_anom_scores, TRAIN_PLATEAU_EPOCH, stages[0], 'centre_mean', args.meta_data_dir, args.get_oarsi_results)
+  print_ensemble_results(stage2_path_to_anom_scores, stage2_epoch, stages[2], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
+  print_ensemble_results(stage3_path_to_anom_scores, stage3_epoch, stages[3], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
+  print_ensemble_results(stage_severe_path_to_anom_scores, SEVERE_PRED_EPOCH, stages[1], 'w_centre', args.meta_data_dir, args.get_oarsi_results)
   combine_results(stage3_path_to_anom_scores, stage_severe_path_to_anom_scores, stage3_epoch, stage_severe_epoch, 'w_centre', args.meta_data_dir)
