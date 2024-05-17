@@ -36,10 +36,11 @@ To run the code, set up a virtual environment:
 
 ```
 pip install virtualenv
-cd ./SS-FewSOME/ss_fewsome
+cd ./SS-FewSOME
 virtualenv myenv
 source myenv/bin/activate
 pip install -r requirements.txt
+cd ss_fewsome
 ```
 
 
