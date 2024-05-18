@@ -193,7 +193,12 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
 
 
               if test_dataset is not None:
-                       df, results, ref_info,ref_std,oarsi_res = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir)
+                       if args.get_oarsi_results:
+                           df, results, ref_info,ref_std,oarsi_res = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+                       else:
+                           df, results, ref_info,ref_std = evaluate_severity(patches, args.padding,args.patchsize, args.stride,seed, train_dataset, test_dataset, model, args.data_path, criterion, args.device, shots, args.meta_data_dir, args.get_oarsi_results)
+
+
                        oas_test.append(results.loc[metric, 'auc'])
                        mid_test.append(results.loc[metric,'auc_mid'])
                        mid_2_test.append(results.loc[metric,'auc_mid2'])
@@ -233,7 +238,7 @@ def train(train_dataset, val_dataset, N, model, epochs, seed, eval_epoch, shots,
           ref_mean.append('na')
           ref_var.append('na')
           channel_std.append('na')
-          assert len(ref_var) == len(sevs) 
+          assert len(ref_var) == len(sevs)
 
 
           logs_df = pd.concat([pd.DataFrame(oas, columns=['OA>0']),  pd.DataFrame(mid, columns=['OA>1']),pd.DataFrame(mid_2, columns=['OA>2']), pd.DataFrame(sevs, columns=['OA>3']), pd.DataFrame(sps, columns=['spearman']),
